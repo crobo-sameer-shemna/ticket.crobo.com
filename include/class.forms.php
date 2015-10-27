@@ -1774,7 +1774,7 @@ class TextboxWidget extends Widget {
                 .' placeholder="'.$config['placeholder'].'"'; ?>
             name="<?php echo $this->name; ?>"
             value="<?php echo Format::htmlchars($this->value); ?>"
-            class="<?php echo $this->field->ht['type']; ?>"/>
+            class="<?php echo $this->field->ht['name']; ?>"/>
         </span>
         <?php
     }
@@ -1822,7 +1822,7 @@ class TextareaWidget extends Widget {
                 .' placeholder="'.$config['placeholder'].'"'; ?>
             id="<?php echo $this->id; ?>"
             name="<?php echo $this->name; ?>"
-            class="<?php echo $this->field->ht['type']; ?>"><?php
+            class="<?php echo $this->field->ht['name']; ?>"><?php
                 echo Format::htmlchars($this->value);
             ?></textarea>
         </span>
@@ -1913,7 +1913,7 @@ class ChoicesWidget extends Widget {
             data-prompt="<?php echo $prompt; ?>"
             <?php if ($config['multiselect'])
                 echo ' multiple="multiple" class="multiselect"'; ?>
-                class="<?php echo $this->field->ht['type']; ?>">
+                class="<?php echo $this->field->ht['name']; ?>">
             <?php if (!$have_def && !$config['multiselect']) { ?>
             <option value="<?php echo $def_key; ?>">&mdash; <?php
                 echo $def_val; ?> &mdash;</option>
@@ -1980,7 +1980,7 @@ class CheckboxWidget extends Widget {
             type="checkbox" name="<?php echo $this->name; ?>[]" <?php
             if ($this->value) echo 'checked="checked"'; ?> value="<?php
             echo $this->field->get('id'); ?>"
-            class="<?php echo $this->field->ht['type']; ?>"/>
+            class="<?php echo $this->field->ht['name']; ?>"/>
         <?php
         if ($config['desc']) { ?>
             <em style="display:inline-block"><?php

@@ -17,25 +17,41 @@ $(window).load(function(){
     });
 });
 
-var dependentsPlatform = [
-    'salesforce',
-    'cis'
-];
+var dependentsPlatform = {
+    'salesforce': {
+        cssClass: 'salesforce',
+        parentText: 'Salesforce'
+    },
+    'cis': {
+        cssClass: 'cis',
+        parentText: 'Crobo Intelligence System'
+    }
+};
 
 function bodyAjaxComplete(e, xhr, settings){
     console.log('bodyAjaxComplete');
 
     $('select.platform').on('change', function() {
-        alert( this.value ); // or $(this).val()
+        var selText = $(this).children('option:selected').text();
+        console.log(selText);
         resetPlatformDependents();
-        $('select.'+this.value).show();
+        var selDependent = getSelectedDependent(selText);
+        console.log(selDependent.cssClass);
+        $('select.'+selDependent.cssClass).show();
     });
     resetPlatformDependents();
 }
 
 function resetPlatformDependents(){
-    for(var i=0; i<dependentsPlatform.length; i++){
-        $('select.'+dependentsPlatform[i]).val('').hide();
+    for(var key in dependentsPlatform){
+        $('select.'+key).val('').hide();
+    }
+}
+function getSelectedDependent(selText){
+    for(var key in dependentsPlatform){
+        if(dependentsPlatform[key].parentText === selText){
+            return dependentsPlatform[key];
+        }
     }
 }
 

@@ -48,7 +48,8 @@ function bodyAjaxComplete(e, xhr, settings){
 
 function resetPlatformDependents(){
     for(var key in dependentsPlatform){
-        $('select.'+key).val('').parent().parent().hide();
+        $('select.'+key).val('');
+        $('select.'+key).parent().parent().hide();
     }
 }
 function getSelectedDependent(selText){

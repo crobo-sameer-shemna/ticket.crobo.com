@@ -42,7 +42,7 @@ define('DBTYPE','mysql');
 define('DBHOST','localhost');
 define('DBNAME','osticket');
 define('DBUSER','osticket_app');
-define('DBPASS','tiC@kEcr@oBo15');
+define('DBPASS','PASSWORD');
 
 # Table prefix
 define('TABLE_PREFIX','ost_');

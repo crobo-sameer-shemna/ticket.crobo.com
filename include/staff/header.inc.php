@@ -45,7 +45,7 @@ if (($lang = Internationalization::getCurrentLanguage())
     <link type="text/css" rel="stylesheet" href="<?php echo ROOT_PATH; ?>css/loadingbar.css?19292ad"/>
     <link type="text/css" rel="stylesheet" href="<?php echo ROOT_PATH; ?>css/rtl.css?19292ad"/>
     <script type="text/javascript" src="./js/jquery.dropdown.js?19292ad"></script>
-
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/custom_form.js?19292ad"></script>
     <?php
     if($ost && ($headers=$ost->getExtraHeaders())) {
         echo "\n\t".implode("\n\t", $headers)."\n";

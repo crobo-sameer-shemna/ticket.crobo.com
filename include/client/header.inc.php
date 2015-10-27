@@ -42,6 +42,7 @@ if (($lang = Internationalization::getCurrentLanguage())
     <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor.min.js?19292ad"></script>
     <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor-osticket.js?19292ad"></script>
     <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor-fonts.js?19292ad"></script>
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/custom_form.js?19292ad"></script>
     <?php
     if($ost && ($headers=$ost->getExtraHeaders())) {
         echo "\n\t".implode("\n\t", $headers)."\n";

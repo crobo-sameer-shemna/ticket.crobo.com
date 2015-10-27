@@ -32,19 +32,23 @@ function bodyAjaxComplete(e, xhr, settings){
     console.log('bodyAjaxComplete');
 
     $('select.platform').on('change', function() {
-        var selText = $(this).children('option:selected').text();
-        console.log(selText);
-        resetPlatformDependents();
-        var selDependent = getSelectedDependent(selText);
-        console.log(selDependent.cssClass);
-        $('select.'+selDependent.cssClass).show();
+        if($(this).val() !== '') {
+            var selText = $(this).children('option:selected').text();
+            console.log(selText);
+            resetPlatformDependents();
+            var selDependent = getSelectedDependent(selText);
+            console.log(selDependent.cssClass);
+            $('select.' + selDependent.cssClass).parent().parent().show();
+        }
     });
-    resetPlatformDependents();
+    if($(this).val() === '') {
+        resetPlatformDependents();
+    }
 }
 
 function resetPlatformDependents(){
     for(var key in dependentsPlatform){
-        $('select.'+key).val('').hide();
+        $('select.'+key).val('').parent().parent().hide();
     }
 }
 function getSelectedDependent(selText){

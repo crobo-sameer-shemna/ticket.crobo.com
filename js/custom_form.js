@@ -17,9 +17,25 @@ $(window).load(function(){
     });
 });
 
+var dependentsPlatform = [
+    'salesforce',
+    'cis'
+];
+
 function bodyAjaxComplete(e, xhr, settings){
     console.log('bodyAjaxComplete');
-    $('select.list-2').on('change', function() {
+
+    $('select.platform').on('change', function() {
         alert( this.value ); // or $(this).val()
+        resetPlatformDependents();
+        $('select.'+this.value).show();
     });
+    resetPlatformDependents();
 }
+
+function resetPlatformDependents(){
+    for(var i=0; i<dependentsPlatform.length; i++){
+        $('select.'+dependentsPlatform[i]).val('').hide();
+    }
+}
+

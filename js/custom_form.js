@@ -3,11 +3,10 @@
  */
 
 $(document).ready(function(){
-    console.log('doc ready');
+
 });
 
 $(window).load(function(){
-    console.log('win load');
     $("body").bind("ajaxSend", function(e, xhr, settings){
         //Sent
     }).bind("ajaxComplete", function(e, xhr, settings){
@@ -15,8 +14,10 @@ $(window).load(function(){
     }).bind("ajaxError", function(e, xhr, settings, thrownError){
         //Error
     });
+    hidePlatformDependents();
 });
 
+var parentPlatform = 'select.platform';
 var dependentsPlatform = {
     'salesforce': {
         cssClass: 'salesforce',
@@ -29,29 +30,28 @@ var dependentsPlatform = {
 };
 
 function bodyAjaxComplete(e, xhr, settings){
-    console.log('bodyAjaxComplete');
-
-    $('select.platform').on('change', function() {
-        if($(this).val() !== '') {
-            var selText = $(this).children('option:selected').text();
-            console.log(selText);
-            resetPlatformDependents();
-            var selDependent = getSelectedDependent(selText);
-            console.log($('select.' + selDependent.cssClass).parents('tr').length);
-           // $('select.' + selDependent.cssClass).parents('tr')[0].show();
-        }
-    });
-    if($(this).val() === '') {
+    $(parentPlatform).on('change', function() {
         resetPlatformDependents();
-    }
+        hidePlatformDependents();
+    });
+    hidePlatformDependents();
 }
 
 function resetPlatformDependents(){
     for(var key in dependentsPlatform){
-        console.log(key);
         $('select.'+key).val('');
-        //$('select.'+key).parents('tr')[0].hide();
-        console.debug($('select.'+key).parents('tr').length);
+    }
+}
+function hidePlatformDependents(){
+    for(var key in dependentsPlatform){
+        $($('select.'+key).parents('tr')[0]).hide();
+    }
+    if((typeof($(parentPlatform)) !== 'undefined')
+        && ($(parentPlatform).val() !== '')) {
+        var selDependent = getSelectedDependent($(parentPlatform).children('option:selected').text());
+        if(typeof(selDependent) !== 'undefined'){
+            $($('select.' + selDependent.cssClass).parents('tr')[0]).show();
+        }
     }
 }
 function getSelectedDependent(selText){

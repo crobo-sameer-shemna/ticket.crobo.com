@@ -38,7 +38,7 @@ function bodyAjaxComplete(e, xhr, settings){
             resetPlatformDependents();
             var selDependent = getSelectedDependent(selText);
             console.log(selDependent.cssClass);
-            $('select.' + selDependent.cssClass).parent().parent().show();
+            $('select.' + selDependent.cssClass).parents('tr')[0].show();
         }
     });
     if($(this).val() === '') {
@@ -49,10 +49,8 @@ function bodyAjaxComplete(e, xhr, settings){
 function resetPlatformDependents(){
     for(var key in dependentsPlatform){
         $('select.'+key).val('');
-        //$('select.'+key).parent().parent().hide();
-        console.debug($('select.'+key).parents('tr'));
-        console.debug($('select.'+key).parent());
-        console.debug($('select.'+key).parent().parent());
+        $('select.'+key).parents('tr')[0].hide();
+        console.debug($('select.'+key).parents('tr')[0]);
     }
 }
 function getSelectedDependent(selText){

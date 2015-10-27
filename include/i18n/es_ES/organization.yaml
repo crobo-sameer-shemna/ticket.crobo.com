@@ -1,0 +1,10 @@
+---
+- 
+  name: osTicket
+  fields:
+    address: |
+      420 Desoto Street
+      Alexandria, LA 71301
+    phone: (318) 290-3674
+    website: http://osticket.com
+    notes: No solo desarrollamos el software, también lo utilizamos para la gestión de soporte para osTicket. Permitanos ayudárle a realizar una implemetación rápida y se posicione en la utilización del potencial de osTicket con todas sus caracteristicas y funcionalidad. Contactenos para soporte profesional o visite nuestro website para obtener documentación y soporte de la comunidad.

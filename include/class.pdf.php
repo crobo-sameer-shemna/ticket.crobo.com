@@ -73,7 +73,7 @@ class Ticket2PDF extends mPDF
 
 		//Common header
         $logo = $this->getLogoFile();
-		$this->Image($logo, $this->lMargin, $this->tMargin, 0, 20);
+		$this->Image($logo, $this->lMargin, $this->tMargin, 0, 20, '', $cfg->getUrl());
         if (strpos($logo, INCLUDE_DIR) === false)
             unlink($logo);
 		$this->SetFont('Arial', 'B', 16);

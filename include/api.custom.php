@@ -39,6 +39,8 @@ class CustomApiController extends ApiController {
 
     function getLists() {
 
+        header("Access-Control-Allow-Origin: *");
+
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 

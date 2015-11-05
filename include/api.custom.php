@@ -6,9 +6,6 @@ include_once INCLUDE_DIR.'class.list.php';
 
 class CustomApiController extends ApiController {
 
-
-
-
     function getTickets($format) {
 
         if(!($key=$this->requireApiKey()))
@@ -40,19 +37,21 @@ class CustomApiController extends ApiController {
         echo '{"status":"200", "data":'.json_encode($tickets).'}';
     }
 
-
     function getLists() {
 
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
-        $field_ids = [1,2];
-        $fields = [];
+        $lists_max = 10;
+        $lists = [];
 
 
-        foreach($field_ids as $field_id){
+        for($list_id = 1; $list_id <= $lists_max; $list_id++){
             //array_push($fields, DynamicForm::lookup($field_id));
-            $list = DynamicList::lookup($field_id);
+            $list = DynamicList::lookup($list_id);
+            if($list === null){
+                break;
+            }
             $items_count = $list->getItemCount();
             $allitems = $list->getAllItems();
             if(isset($list->_list)){
@@ -70,31 +69,31 @@ class CustomApiController extends ApiController {
                 ];
             }
 
-            //sort modes: Alpha, -Alpha, SortCol
+            //sort modes: Alpha, -Alpha (reverse alpha), SortCol
             $sort_mode = str_replace('-', '_', $list['sort_mode']);
             usort($items, array($this, 'itemSort_'.$sort_mode));
             $list['items'] = $items;
-            array_push($fields, $list);
+            array_push($lists, $list);
 
             //array_push($fields, DynamicListItem::lookup($field_id));
             //$list['items'] = DynamicListItem::objects()->filter(array('list_id'=>$list['id']));
 
         }
 
-        echo '{"status":"200", "data":'.json_encode($fields).'}';
+        echo '{"status":"200", "data":'.json_encode($lists).'}';
     }
 
     /* private helper functions */
 
-    function itemSort_SortCol( $a, $b ) {
+    function itemSort_SortCol( $a, $b ) {//sort by sortOrder
         return $a['sortOrder'] == $b['sortOrder'] ? 0 : ( $a['sortOrder'] > $b['sortOrder'] ) ? 1 : -1;
     }
 
-    function itemSort_Alpha($a, $b) {
+    function itemSort_Alpha($a, $b) {//sort alphabetically
         return strcmp($a["value"], $b["value"]);
     }
 
-    function itemSort__Alpha($a, $b) {
+    function itemSort__Alpha($a, $b) {//sort reverse alphabetically
         return strcmp($b["value"], $a["value"]);
     }
 

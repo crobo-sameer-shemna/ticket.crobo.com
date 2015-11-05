@@ -54,23 +54,29 @@ class CustomApiController extends ApiController {
             //array_push($fields, DynamicForm::lookup($field_id));
             $list = DynamicList::lookup($field_id);
             $items_count = $list->getItemCount();
-            $items = $list->getAllItems();
+            $allitems = $list->getAllItems();
             if(isset($list->_list)){
                 $list = $list->_list;
             }
             $list = $list->ht;
             $list['items_count'] = $items_count;
-            $list['items'] = [];
-            foreach($items as $item){
-                $list['items'][] = [
+            $items = [];
+            foreach($allitems as $item){
+                $items[] = [
                     'id' => $item->getId(),
                     'value' => $item->getValue(),
-                    'abbrev' => $item->getAbbrev()
+                    'abbrev' => $item->getAbbrev(),
+                    'sortOrder' => $item->getSortOrder()
                 ];
             }
-            array_push($fields, $list);
-            //array_push($fields, DynamicListItem::lookup($field_id));
 
+            //sort modes: Alpha, -Alpha, SortCol
+            $sort_mode = str_replace('-', '_', $list['sort_mode']);
+            usort($items, array($this, 'itemSort_'.$sort_mode));
+            $list['items'] = $items;
+            array_push($fields, $list);
+
+            //array_push($fields, DynamicListItem::lookup($field_id));
             //$list['items'] = DynamicListItem::objects()->filter(array('list_id'=>$list['id']));
 
         }
@@ -78,6 +84,19 @@ class CustomApiController extends ApiController {
         echo '{"status":"200", "data":'.json_encode($fields).'}';
     }
 
+    /* private helper functions */
+
+    function itemSort_SortCol( $a, $b ) {
+        return $a['sortOrder'] == $b['sortOrder'] ? 0 : ( $a['sortOrder'] > $b['sortOrder'] ) ? 1 : -1;
+    }
+
+    function itemSort_Alpha($a, $b) {
+        return strcmp($a["value"], $b["value"]);
+    }
+
+    function itemSort__Alpha($a, $b) {
+        return strcmp($b["value"], $a["value"]);
+    }
 
 }
 

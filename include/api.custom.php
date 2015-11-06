@@ -2,6 +2,7 @@
 
 include_once INCLUDE_DIR.'class.api.php';
 include_once INCLUDE_DIR.'class.ticket.php';
+include_once INCLUDE_DIR.'class.dynamic_forms.php';
 include_once INCLUDE_DIR.'class.list.php';
 
 class CustomApiController extends ApiController {
@@ -39,8 +40,6 @@ class CustomApiController extends ApiController {
 
     function getLists() {
 
-        header("Access-Control-Allow-Origin: *");
-
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
@@ -49,7 +48,6 @@ class CustomApiController extends ApiController {
 
 
         for($list_id = 1; $list_id <= $lists_max; $list_id++){
-            //array_push($fields, DynamicForm::lookup($field_id));
             $list = DynamicList::lookup($list_id);
             if($list === null){
                 break;
@@ -83,6 +81,34 @@ class CustomApiController extends ApiController {
         }
 
         echo '{"status":"200", "data":'.json_encode($lists).'}';
+    }
+
+    function getForms() {
+
+        //if(!($key=$this->requireApiKey()))
+        //    return $this->exerr(401, __('API key not authorized'));
+
+        $forms_max = 10;
+        $forms = [];
+
+
+        for($form_id = 1; $form_id <= $forms_max; $form_id++){
+
+            $form = DynamicForm::lookup($form_id);
+            if($form === null){
+                break;
+            }
+            $allfields = $form->getFields();
+            $form = $form->ht;
+            $fields = [];
+            foreach($allfields as $field){
+                $fields[] = $field->ht;
+            }
+            $form['fields_count'] = count($fields);
+            $form['fields'] = $fields;
+            array_push($forms, $form);
+        }
+        echo '{"status":"200", "data":'.json_encode($forms).'}';
     }
 
     /* private helper functions */

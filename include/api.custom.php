@@ -43,7 +43,7 @@ class CustomApiController extends ApiController {
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
-        $lists_max = 10;
+        $lists_max = 100;
         $lists = [];
 
 
@@ -88,7 +88,7 @@ class CustomApiController extends ApiController {
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
-        $forms_max = 10;
+        $forms_max = 100;
         $forms = [];
 
 

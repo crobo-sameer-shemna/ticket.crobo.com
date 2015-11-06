@@ -38,29 +38,52 @@ class CustomApiController extends ApiController {
         echo '{"status":"200", "data":'.json_encode($tickets).'}';
     }
 
-    function getLists() {
+    function getLists($format) {
 
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
+        $request = $this->getRequest($format);
+        $list_ids = (isset($request['list_ids'])) ? $request['list_ids'] : "*";
+
         $lists_max = 100;
         $lists = [];
 
-
-        for($list_id = 1; $list_id <= $lists_max; $list_id++){
-            $list = DynamicList::lookup($list_id);
-            if($list === null){
-                break;
+        if($list_ids === "*") {
+            for ($list_id = 1; $list_id <= $lists_max; $list_id++) {
+                $list = $this->setList($list_id);
+                if($list) {
+                    array_push($lists, $list);
+                }else{
+                    break;
+                }
+                //array_push($fields, DynamicListItem::lookup($field_id));
+                //$list['items'] = DynamicListItem::objects()->filter(array('list_id'=>$list['id']));
             }
+        }else{
+            foreach($list_ids as $list_id){
+                $list = $this->setList($list_id);
+                if($list) {
+                    array_push($lists, $list);
+                }
+            }
+        }
+
+        echo '{"status":"200", "data":'.json_encode($lists).'}';
+    }
+
+    function setList($list_id){
+        $list = DynamicList::lookup($list_id);
+        if($list !== null) {
             $items_count = $list->getItemCount();
             $allitems = $list->getAllItems();
-            if(isset($list->_list)){
+            if (isset($list->_list)) {
                 $list = $list->_list;
             }
             $list = $list->ht;
             $list['items_count'] = $items_count;
             $items = [];
-            foreach($allitems as $item){
+            foreach ($allitems as $item) {
                 $items[] = [
                     'id' => $item->getId(),
                     'value' => $item->getValue(),
@@ -71,44 +94,60 @@ class CustomApiController extends ApiController {
 
             //sort modes: Alpha, -Alpha (reverse alpha), SortCol
             $sort_mode = str_replace('-', '_', $list['sort_mode']);
-            usort($items, array($this, 'itemSort_'.$sort_mode));
+            usort($items, array($this, 'itemSort_' . $sort_mode));
             $list['items'] = $items;
-            array_push($lists, $list);
-
-            //array_push($fields, DynamicListItem::lookup($field_id));
-            //$list['items'] = DynamicListItem::objects()->filter(array('list_id'=>$list['id']));
-
+            return $list;
+        }else{
+            return false;
         }
-
-        echo '{"status":"200", "data":'.json_encode($lists).'}';
     }
 
-    function getForms() {
+    function getForms($format) {
 
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
+        $request = $this->getRequest($format);
+        $form_ids = (isset($request['form_ids'])) ? $request['form_ids'] : "*";
+
         $forms_max = 100;
         $forms = [];
 
-
-        for($form_id = 1; $form_id <= $forms_max; $form_id++){
-
-            $form = DynamicForm::lookup($form_id);
-            if($form === null){
-                break;
+        if($form_ids === "*") {
+            for ($form_id = 1; $form_id <= $forms_max; $form_id++) {
+                $form = $this->setForm($form_id);
+                if($form) {
+                    array_push($forms, $form);
+                }else{
+                    break;
+                }
             }
+        }else{
+            foreach($form_ids as $form_id){
+                $form = $this->setForm($form_id);
+                if($form) {
+                    array_push($forms, $form);
+                }
+            }
+        }
+        echo '{"status":"200", "data":'.json_encode($forms).'}';
+    }
+
+    function setForm($form_id){
+        $form = DynamicForm::lookup($form_id);
+        if($form !== null) {
             $allfields = $form->getFields();
             $form = $form->ht;
             $fields = [];
-            foreach($allfields as $field){
+            foreach ($allfields as $field) {
                 $fields[] = $field->ht;
             }
             $form['fields_count'] = count($fields);
             $form['fields'] = $fields;
-            array_push($forms, $form);
+            return $form;
+        }else{
+            return false;
         }
-        echo '{"status":"200", "data":'.json_encode($forms).'}';
     }
 
     /* private helper functions */

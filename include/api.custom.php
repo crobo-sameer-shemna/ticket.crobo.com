@@ -40,6 +40,8 @@ class CustomApiController extends ApiController {
 
     function getLists($format) {
 
+        header("Access-Control-Allow-Origin: *");
+
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));
 
@@ -103,6 +105,8 @@ class CustomApiController extends ApiController {
     }
 
     function getForms($format) {
+
+        header("Access-Control-Allow-Origin: *");
 
         //if(!($key=$this->requireApiKey()))
         //    return $this->exerr(401, __('API key not authorized'));

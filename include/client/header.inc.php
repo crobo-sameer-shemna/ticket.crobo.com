@@ -50,6 +50,7 @@ if (($lang = Internationalization::getCurrentLanguage())
     ?>
 </head>
 <body>
+<?php include_once(INCLUDE_DIR.'analyticstracking.php') ?>
     <div id="container">
         <div id="header">
             <div class="pull-right flush-right">

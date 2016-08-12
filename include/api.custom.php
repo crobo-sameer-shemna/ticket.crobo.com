@@ -189,7 +189,7 @@ class CustomApiController extends ApiController {
                 $agent = $agent->ht;
                 array_push($agents, $agent);
             }
-        }else if(isset($request['agent_ids']) && (count($request['agent_ids']) > 0)) {
+        }else if(isset($request['agent_ids']) && is_array($request['agent_ids']) && (count($request['agent_ids']) > 0)) {
             $agent_ids = $request['agent_ids'];
 
             foreach ($agent_ids as $agent_id) {

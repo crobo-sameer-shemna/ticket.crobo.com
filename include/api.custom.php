@@ -204,7 +204,8 @@ class CustomApiController extends ApiController {
                 $agent = new Staff($agent_id);
                 if($agent) {
                     $agent = $agent->ht;
-                    array_push($agents, $agent);
+                    if($agent !== null)
+                        array_push($agents, $agent);
                 }else{
                     break;
                 }

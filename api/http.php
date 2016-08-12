@@ -29,7 +29,8 @@ $dispatcher = patterns('',
          )),
         url_post("^/custom_gettickets\.(?P<format>xml|json)$", array('api.custom.php:CustomApiController','getTickets')),
         url_post("^/custom_getlists\.(?P<format>xml|json)$", array('api.custom.php:CustomApiController','getLists')),
-        url_post("^/custom_getforms\.(?P<format>xml|json)$", array('api.custom.php:CustomApiController','getForms'))
+        url_post("^/custom_getforms\.(?P<format>xml|json)$", array('api.custom.php:CustomApiController','getForms')),
+        url_post("^/custom_getagents\.(?P<format>xml|json)$", array('api.custom.php:CustomApiController','getAgents'))
     );
 
 Signal::send('api', $dispatcher);

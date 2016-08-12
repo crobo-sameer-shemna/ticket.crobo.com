@@ -4,6 +4,7 @@ include_once INCLUDE_DIR.'class.api.php';
 include_once INCLUDE_DIR.'class.ticket.php';
 include_once INCLUDE_DIR.'class.dynamic_forms.php';
 include_once INCLUDE_DIR.'class.list.php';
+include_once INCLUDE_DIR.'class.staff.php';
 
 class CustomApiController extends ApiController {
 
@@ -166,6 +167,51 @@ class CustomApiController extends ApiController {
 
     function itemSort__Alpha($a, $b) {//sort reverse alphabetically
         return strcmp($b["value"], $a["value"]);
+    }
+
+
+    function getAgents($format) {
+
+        header("Access-Control-Allow-Origin: *");
+
+        //if(!($key=$this->requireApiKey()))
+        //    return $this->exerr(401, __('API key not authorized'));
+
+        $request = $this->getRequest($format);
+
+        $agents = [];
+
+        if(isset($request['agent_emails']) && (count($request['agent_emails']) > 0)) {
+            $agent_ids = $request['agent_emails'];
+
+            foreach ($agent_ids as $agent_id) {
+                $agent = Staff::lookupByEmail($agent_id);
+                $agent = $agent->ht;
+                array_push($agents, $agent);
+            }
+        }else if(isset($request['agent_ids']) && (count($request['agent_ids']) > 0)) {
+            $agent_ids = $request['agent_ids'];
+
+            foreach ($agent_ids as $agent_id) {
+                $agent = new Staff($agent_id);
+                $agent = $agent->ht;
+                array_push($agents, $agent);
+            }
+        }else if(isset($request['agent_ids']) && ($request['agent_ids'] == '*')) {
+            $agents_max = 100;
+
+            for ($agent_id = 1; $agent_id <= $agents_max; $agent_id++) {
+                $agent = new Staff($agent_id);
+                if($agent) {
+                    $agent = $agent->ht;
+                    array_push($agents, $agent);
+                }else{
+                    break;
+                }
+            }
+        }
+
+        echo '{"status":"200", "data":'.json_encode($agents).'}';
     }
 
 }

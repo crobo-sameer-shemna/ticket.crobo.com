@@ -658,6 +658,10 @@ implements EmailContact {
         return ($id && ($staff= new Staff($id)) && $staff->getId()) ? $staff : null;
     }
 
+    function lookupByEmail($email) {
+        return self::lookup(self::getIdByEmail($email));
+    }
+
 
     function create($vars, &$errors) {
         if(($id=self::save(0, $vars, $errors)) && ($staff=Staff::lookup($id))) {

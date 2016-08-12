@@ -39,10 +39,10 @@ define('ADMIN_EMAIL','sameer.shemna@crobo.com');
 # ---------------------------------------------------
 # Mysql Login info
 define('DBTYPE','mysql');
-define('DBHOST','localhost');
-define('DBNAME','osticket');
-define('DBUSER','osticket_app');
-define('DBPASS','PASSWORD');
+define('DBHOST','db1.cro.wopi-server.de');
+define('DBNAME','ticketing');
+define('DBUSER','ticketing');
+define('DBPASS','g-pJCrL_t3rqjbGuX4KYs_5W');
 
 # Table prefix
 define('TABLE_PREFIX','ost_');

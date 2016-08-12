@@ -85,3 +85,5 @@ fabric.properties
 # OSTicket
 attachments/
 include/ost-config.php
+api/http.php
+scp/ajax.php

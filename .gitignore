@@ -85,3 +85,4 @@ fabric.properties
 # OSTicket
 attachments/
 include/ost-config.php
+vendor

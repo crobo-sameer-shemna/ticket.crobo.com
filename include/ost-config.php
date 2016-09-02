@@ -16,6 +16,8 @@
     $Id: $
 **********************************************************************/
 
+require_once __DIR__.'/../vendor/autoload.php';
+
 #Disable direct access.
 if(!strcasecmp(basename($_SERVER['SCRIPT_NAME']),basename(__FILE__)) || !defined('INCLUDE_DIR'))
     die('kwaheri rafiki!');

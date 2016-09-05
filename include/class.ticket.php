@@ -33,6 +33,7 @@ require_once(INCLUDE_DIR.'class.dynamic_forms.php');
 require_once(INCLUDE_DIR.'class.user.php');
 require_once(INCLUDE_DIR.'class.collaborator.php');
 
+use Underscore\Types\Arrays;
 
 class Ticket {
 
@@ -2202,6 +2203,13 @@ class Ticket {
         // Validate dynamic meta-data
         $forms = DynamicFormEntry::forTicket($this->getId());
         foreach ($forms as $form) {
+
+            // catch custom form `Tech Support`
+            $techSupportForm = null;
+            if (isset($form->ht, $form->ht['form_id']) and $form->ht['form_id'] == 16) {
+                $techSupportForm = $form;
+            }
+
             // Don't validate deleted forms
             if (!in_array($form->getId(), $vars['forms']))
                 continue;
@@ -2233,6 +2241,31 @@ class Ticket {
             $vars['note']=sprintf(_S('Ticket details updated by %s'), $thisstaff->getName());
 
         $this->logNote(_S('Ticket Updated'), $vars['note'], $thisstaff);
+
+        if (isset($techSupportForm, $techSupportForm->_fields, $techSupportForm->_fields[57])) {
+            $oldValue = Arrays::first($this->_answers['scrubstatus']->entry->getClean()[57]);
+            $newValue = Arrays::first($techSupportForm->_fields[57]->getClean());
+            if ($oldValue !== $newValue) {
+            switch (strtolower($newValue)) {
+                case 'accepted':
+                    // Thorsten id is 5
+                    $this->setStaffId(5);
+                    break;
+                case 'rejected':
+                    $userEmail = $this->getTicketAssigneeEmail($techSupportForm->_clean['advertiser_id'], 'advertiser');
+                    if ($assigneeId = Staff::getIdByEmail($userEmail['email'])) {
+                        $this->setStaffId(Staff::getIdByEmail($userEmail['email']));
+                    }
+                    break;
+                case 'pending':
+                    $userEmail = $this->getTicketAssigneeEmail($techSupportForm->_clean['publisher_id'], 'publisher');
+                    if ($assigneeId = Staff::getIdByEmail($userEmail['email'])) {
+                        $this->setStaffId(Staff::getIdByEmail($userEmail['email']));
+                    }
+                    break;
+            }
+            }
+        }
 
         // Decide if we need to keep the just selected SLA
         $keepSLA = ($this->getSLAId() != $vars['slaId']);
@@ -3024,5 +3057,20 @@ class Ticket {
         }
    }
 
+    /**
+     * @return array
+     */
+    public function getTicketAssigneeEmail($id, $type = 'publisher')
+    {
+        $table = ($type == 'publisher') ? 'ho_Affiliate' : 'ho_Advertiser';
+
+//        $connection = mysqli_connect('db1.cro.wopi-server.de', 'cisticketing', 'a3A8wP-xMCsEz3FCYs8_BieN', 'cis');
+        $connection = mysqli_connect('localhost', 'root', 'root', 'cis');
+        $offerInfoQuery = mysqli_query($connection, "select email from ho_Employee 
+                                                  join {$table} 
+                                                  on ho_Employee.id = {$table}.account_manager_id
+                                                  where {$table}.id = {$id}
+                                                ");
+        return mysqli_fetch_assoc($offerInfoQuery);
+    }
 }
-?>

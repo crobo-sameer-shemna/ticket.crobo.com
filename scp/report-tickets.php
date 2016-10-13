@@ -344,24 +344,12 @@ function prepareTicketsExport($mysqlQuery, $scrubbing = false)
 {
     $ticketsExportArray = [
         /* Excel Header*/
-        ['ID', 'Subject', 'User', 'Department', 'Assignees', 'Status', 'Created', 'Closed', 'Priority', 'Platform']
+        [
+            'ID', 'Subject', 'User', 'Department', 'Assignees', 'Status', 'Created', 'Closed',
+            'Priority', 'Platform', 'Advertiser ID', 'Advertiser', 'Publisher ID', 'Publisher',
+            'Offer ID', 'Offer', 'Conversions', 'Cost', 'Revenue', 'Paid by advertiser', 'Month of performance'
+        ]
     ];
-
-
-    $ticketsExportArray[0][] = 'Advertiser ID';
-    $ticketsExportArray[0][] = 'Advertiser';
-
-    $ticketsExportArray[0][] = 'Publisher ID';
-    $ticketsExportArray[0][] = 'Publisher';
-
-    $ticketsExportArray[0][] = 'Offer ID';
-    $ticketsExportArray[0][] = 'Offer';
-
-    $ticketsExportArray[0][] = 'Conversions';
-    $ticketsExportArray[0][] = 'Cost';
-    $ticketsExportArray[0][] = 'Revenue';
-
-    $ticketsExportArray[0][] = 'Paid by advertiser';
 
     while ($ticketRow = mysqli_fetch_assoc($mysqlQuery)) {
 
@@ -382,19 +370,17 @@ function prepareTicketsExport($mysqlQuery, $scrubbing = false)
             $ticket->getCloseDate(),
             $answers['priority'],
             $answers['platform'],
-
             $answers['advertiser_id'],
             $answers['advertiser'],
             $answers['publisher_id'],
             $answers['publisher'],
-
             $answers['offer_id'],
             getOfferName($answers['offer_id']),
-
             $answers['no_of_conversions'],
             $answers['total_cost'],
             $answers['total_revenue'],
             $answers['paidbyadvertiser'],
+            $answers['month_of_performance'],
         ];
 
         foreach ($itemArray as $key => $value) {

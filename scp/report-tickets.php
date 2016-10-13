@@ -347,7 +347,8 @@ function prepareTicketsExport($mysqlQuery, $scrubbing = false)
         [
             'ID', 'Subject', 'User', 'Department', 'Assignees', 'Status', 'Created', 'Closed',
             'Priority', 'Platform', 'Advertiser ID', 'Advertiser', 'Publisher ID', 'Publisher',
-            'Offer ID', 'Offer', 'Conversions', 'Cost', 'Revenue', 'Paid by advertiser', 'Month of performance'
+            'Offer ID', 'Offer', 'Conversions', 'Cost', 'Revenue', 'Paid by advertiser', 'Month of performance',
+            'Pub Acc Manager', 'Adv Acc Manager'
         ]
     ];
 
@@ -381,6 +382,8 @@ function prepareTicketsExport($mysqlQuery, $scrubbing = false)
             $answers['total_revenue'],
             $answers['paidbyadvertiser'],
             $answers['month_of_performance'],
+            getAccountManagerName($answers['publisher_id'], 'publisher'),
+            getAccountManagerName($answers['advertiser_id'], 'advertiser'),
         ];
 
         foreach ($itemArray as $key => $value) {
@@ -411,6 +414,23 @@ function getOfferName($id)
     mysqli_close($connection);
 
     return (is_array($offerNameQuery) and isset($offerNameQuery['name'])) ? $offerNameQuery['name'] : '';
+}
+
+function getAccountManagerName($id, $type = 'advertiser')
+{
+    $id = intval($id);
+    $joinTable = ($type === 'advertiser') ? 'ho_Advertiser' : 'ho_Affiliate';
+
+    $connection = connectToCisDatabase();
+    $query = mysqli_query($connection, "select ho_Employee.first_name, ho_Employee.last_name from {$joinTable}
+                                        join ho_Employee on ho_Employee.id = {$joinTable}.account_manager_id 
+                                        where {$joinTable}.id = '{$id}' ");
+
+    $query = mysqli_fetch_assoc($query);
+    mysqli_close($connection);
+
+    return (is_array($query) and isset($query['first_name'], $query['last_name'])) ?
+        "{$query['first_name']} {$query['last_name']} " : '';
 }
 
 require_once(STAFFINC_DIR . 'footer.inc.php');

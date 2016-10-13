@@ -416,13 +416,11 @@ function connectToCisDatabase()
 
 function getOfferName($id)
 {
-    if (empty($id) or !is_int($id)) {
-        return '';
-    }
     $id = intval($id);
 
     $connection = connectToCisDatabase();
-    $offerNameQuery = mysqli_query($connection, "select name from ho_Offer where id = {$id}");
+    $offerNameQuery = mysqli_query($connection, "select name from ho_Offer WHERE id = '{$id}' ");
+
     $offerNameQuery = mysqli_fetch_assoc($offerNameQuery);
     mysqli_close($connection);
 

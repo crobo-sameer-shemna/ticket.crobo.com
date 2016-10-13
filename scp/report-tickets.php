@@ -31,8 +31,8 @@ monthlyStatsByAgentReport($monthlyStatsByAgentReportDownloadFile);
             margin: 2px 0px !important;
         }
 
-        hr{
-            margin:30px auto;
+        hr {
+            margin: 30px auto;
             display: block;
         }
     </style>
@@ -207,14 +207,16 @@ function scrubbingReport(&$scrubbingReportDownloadFile)
             $ticketIds = db_query(" select ost_ticket.ticket_id from ost_ticket
                                     join ost_ticket__cdata on ost_ticket.ticket_id = ost_ticket__cdata.ticket_id
                                     where ost_ticket.created >= '{$from}' and ost_ticket.created <= '{$to}' 
-                                    and ost_ticket__cdata.subject like '%scrub%'
-                                    order by ticket_id desc
+                                    and ( ost_ticket__cdata.subject like '%scrub%' or ost_ticket__cdata.subject like '%Scrub%' )
+                                    order by ost_ticket.ticket_id desc
                                   ");
 
-            $ticketsExportArray = prepareTicketsExport($ticketIds);
+            $ticketsExportArray = prepareTicketsExport($ticketIds, true);
+
             $phpExcelObject = new PHPExcel();
             $phpExcelObject->setActiveSheetIndex(0);
             $activeSheet = $phpExcelObject->getActiveSheet();
+
             $activeSheet->fromArray($ticketsExportArray, null, 'A1');
             $writer = PHPExcel_IOFactory::createWriter($phpExcelObject, 'Excel2007');
             $writer->save($scrubbingReportDownloadFile = __DIR__ . '/../attachments/scrubbing_report_' . time() . '.xlsx');
@@ -338,21 +340,38 @@ function monthlyStatsByAgentReport(&$monthlyStatsByAgentReportDownloadFile)
  * @param $mysqlQuery
  * @return array
  */
-function prepareTicketsExport($mysqlQuery)
+function prepareTicketsExport($mysqlQuery, $scrubbing = false)
 {
     $ticketsExportArray = [
         /* Excel Header*/
-        ['ID', 'Subject', 'User', 'Department', 'Assignees', 'Status', 'Created', 'Closed', 'Priority', 'Platform', 'Advertiser', 'Publisher']
+        ['ID', 'Subject', 'User', 'Department', 'Assignees', 'Status', 'Created', 'Closed', 'Priority', 'Platform']
     ];
 
+
+    $ticketsExportArray[0][] = 'Advertiser ID';
+    $ticketsExportArray[0][] = 'Advertiser';
+
+    $ticketsExportArray[0][] = 'Publisher ID';
+    $ticketsExportArray[0][] = 'Publisher';
+
+    $ticketsExportArray[0][] = 'Offer ID';
+    $ticketsExportArray[0][] = 'Offer';
+
+    $ticketsExportArray[0][] = 'Conversions';
+    $ticketsExportArray[0][] = 'Cost';
+    $ticketsExportArray[0][] = 'Revenue';
+
+    $ticketsExportArray[0][] = 'Paid by advertiser';
+
     while ($ticketRow = mysqli_fetch_assoc($mysqlQuery)) {
+
         $ticket = new Ticket($ticketRow['ticket_id']);
         $answers = array_map(function ($item) {
             $value = (is_object($item->getValue())) ? (string)$item->getValue() : $item->getValue();
             return (is_array($value)) ? array_shift($value) : $value;
         }, $ticket->_answers);
 
-        $ticketsExportArray[] = [
+        $itemArray = [
             $ticket->getId(),
             $ticket->getSubject(),
             $ticket->getUser()->getUserName(),
@@ -363,11 +382,51 @@ function prepareTicketsExport($mysqlQuery)
             $ticket->getCloseDate(),
             $answers['priority'],
             $answers['platform'],
+
+            $answers['advertiser_id'],
             $answers['advertiser'],
+            $answers['publisher_id'],
             $answers['publisher'],
+
+            $answers['offer_id'],
+            getOfferName($answers['offer_id']),
+
+            $answers['no_of_conversions'],
+            $answers['total_cost'],
+            $answers['total_revenue'],
+            $answers['paidbyadvertiser'],
         ];
+
+        foreach ($itemArray as $key => $value) {
+            if (empty($value)) {
+                $itemArray[$key] = '-';
+            }
+        }
+        $ticketsExportArray[] = $itemArray;
     }
+
     return $ticketsExportArray;
+}
+
+function connectToCisDatabase()
+{
+    return mysqli_connect('138.201.69.181', 'cisticketing', 'a3A8wP-xMCsEz3FCYs8_BieN', 'cis');
+//    return mysqli_connect('localhost', 'root', 'root', 'cis_prod');
+}
+
+function getOfferName($id)
+{
+    if (empty($id) or !is_int($id)) {
+        return '';
+    }
+    $id = intval($id);
+
+    $connection = connectToCisDatabase();
+    $offerNameQuery = mysqli_query($connection, "select name from ho_Offer where id = {$id}");
+    $offerNameQuery = mysqli_fetch_assoc($offerNameQuery);
+    mysqli_close($connection);
+
+    return (is_array($offerNameQuery) and isset($offerNameQuery['name'])) ? $offerNameQuery['name'] : '';
 }
 
 require_once(STAFFINC_DIR . 'footer.inc.php');
